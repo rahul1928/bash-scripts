@@ -1,0 +1,21 @@
+#!/bin/bash
+# Database credentials
+user=$1
+password=$2
+host=$3
+db_name=$4
+backup_path=$5
+date=$(date +"%d-%b-%Y")
+
+
+# Dump database into SQL file
+ mysqldump --user=$user --password=$password --host=$host $db_name > $backup_path/$db_name-$date.sql
+
+# Delete files older than 30 days 
+# find $backup_path/* -mtime +30 -exec rm {} \;
+
+aws s3 cp $backup_path/$db_name-$date.sql s3://mybucket/myfolder --recursive
+
+
+# Delete files older than 30 days in s3bucket
+# find $backup_path/* -mtime +30 -exec rm {} \;
